@@ -1,4 +1,5 @@
 from site_location import SiteLocationPlayer, Store, attractiveness_allocation
+from random import randrange
 
 
 class AodSemiGreedyPlayer(SiteLocationPlayer):
@@ -8,7 +9,8 @@ class AodSemiGreedyPlayer(SiteLocationPlayer):
     Author: Juho Kim
     """
 
-    SEPARATION_COUNT = 10
+    SAMPLE_COUNT = 1000
+    FILTER_COUNT = 100
     ACTIVE_ROUND_COUNT = 5
     ATTRACTIVENESS_WEIGHT = 3
     FIRST_TARGET = 0.8
@@ -44,14 +46,16 @@ class AodSemiGreedyPlayer(SiteLocationPlayer):
         attractivenesses = {}
         densities = {}
 
-        for x in range(slmap.size[0] // self.SEPARATION_COUNT // 2, slmap.size[0],
-                       slmap.size[0] // self.SEPARATION_COUNT):
-            for y in range(slmap.size[1] // self.SEPARATION_COUNT // 2, slmap.size[1],
-                           slmap.size[1] // self.SEPARATION_COUNT):
-                poss.append((x, y))
-                attractivenesses[x, y] = self.get_attractiveness_allocation(slmap, store_locations, store_config,
-                                                                            Store((x, y), 'small'))
-                densities[x, y] = slmap.population_distribution[x, y]
+        for _ in range(self.SAMPLE_COUNT):
+            x, y = randrange(0, slmap.size[0]), randrange(0, slmap.size[1])
+            poss.append((x, y))
+
+        poss = sorted(poss, key=lambda key: -slmap.population_distribution[key])[:self.FILTER_COUNT]
+
+        for x, y in poss:
+            attractivenesses[x, y] = self.get_attractiveness_allocation(slmap, store_locations, store_config,
+                                                                        Store((x, y), 'small'))
+            densities[x, y] = slmap.population_distribution[x, y]
 
         min_attractiveness = min(attractivenesses.values())
         max_attractiveness = max(attractivenesses.values())
