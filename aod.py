@@ -9,10 +9,10 @@ class AodSemiGreedyPlayer(SiteLocationPlayer):
     Author: Juho Kim
     """
 
-    SAMPLE_COUNT = 1000
+    SAMPLE_COUNT = 500
     FILTER_COUNT = 100
     ACTIVE_ROUND_COUNT = 5
-    ATTRACTIVENESS_WEIGHT = 3
+    ATTRACTIVENESS_WEIGHT = 4
     FIRST_TARGET = 0.8
 
     def __init__(self, player_id, config):
