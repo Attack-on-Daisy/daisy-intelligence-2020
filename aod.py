@@ -54,13 +54,6 @@ class AodSemiGreedyPlayer(SiteLocationPlayer):
             attractivenesses[x, y] = self.get_attractiveness_allocation(slmap, store_locations, store_config,
                                                                         Store((x, y), 'small'))
 
-        min_attractiveness = min(attractivenesses.values())
-        max_attractiveness = max(attractivenesses.values())
-
-        for x, y in poss:
-            attractivenesses[x, y] = (attractivenesses[x, y] - min_attractiveness) / (
-                        max_attractiveness - min_attractiveness)
-
         poss.sort(key=lambda key: attractivenesses[key])
 
         stores = []
