@@ -9,10 +9,9 @@ class AodSemiGreedyPlayer(SiteLocationPlayer):
     Author: Juho Kim
     """
 
-    SAMPLE_COUNT = 500
+    SAMPLE_COUNT = 400
     FILTER_COUNT = 100
-    ACTIVE_ROUND_COUNT = 5
-    ATTRACTIVENESS_WEIGHT = 4
+    ACTIVE_ROUND_COUNT = 4
     FIRST_TARGET = 0.8
 
     def __init__(self, player_id, config):
@@ -44,7 +43,6 @@ class AodSemiGreedyPlayer(SiteLocationPlayer):
 
         poss = []
         attractivenesses = {}
-        densities = {}
 
         for _ in range(self.SAMPLE_COUNT):
             x, y = randrange(0, slmap.size[0]), randrange(0, slmap.size[1])
@@ -55,21 +53,15 @@ class AodSemiGreedyPlayer(SiteLocationPlayer):
         for x, y in poss:
             attractivenesses[x, y] = self.get_attractiveness_allocation(slmap, store_locations, store_config,
                                                                         Store((x, y), 'small'))
-            densities[x, y] = slmap.population_distribution[x, y]
 
         min_attractiveness = min(attractivenesses.values())
         max_attractiveness = max(attractivenesses.values())
-        min_density = min(densities.values())
-        max_density = max(densities.values())
 
         for x, y in poss:
             attractivenesses[x, y] = (attractivenesses[x, y] - min_attractiveness) / (
                         max_attractiveness - min_attractiveness)
-            densities[x, y] = (densities[x, y] - min_density) / (max_density - min_density)
 
-        weights = {(x, y): self.ATTRACTIVENESS_WEIGHT * attractivenesses[x, y] + densities[x, y] for x, y in poss}
-
-        poss.sort(key=lambda key: weights[key])
+        poss.sort(key=lambda key: attractivenesses[key])
 
         stores = []
 
